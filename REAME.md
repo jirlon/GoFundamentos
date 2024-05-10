@@ -1,0 +1,1 @@
+Olá, nesse projeto revisaremos alguns conceitos fundamentais em GO.
