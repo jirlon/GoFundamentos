@@ -3,14 +3,16 @@ package main
 import "fmt"
 
 const englishHelloPrefix = "Hello, "
+const spanish = "espanhol"
+const spanishHelloPrefix = "Hola, "
 
 func Hello(name string, language string) string {
 	if name == "" {
 		name = "World"
 	}
 
-	if language == "espanhol" {
-		return "Hola, " + name
+	if language == spanish {
+		return spanishHelloPrefix + name
 	}
 	return englishHelloPrefix + name
 }
