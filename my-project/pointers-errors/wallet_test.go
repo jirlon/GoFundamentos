@@ -28,10 +28,12 @@ func (b Bitcoin) String() string {
 	return fmt.Sprintf("%d BTC", b)
 }
 
+var ErrInsufficientFunds = errors.New("impossivel realizar withdraw, saldo insuficiente")
+
 func (w Wallet) Withdraw(amount Bitcoin) error {
 
 	if amount > w.balance {
-		return errors.New("impossivel realizar withdraw, saldo insuficiente")
+		return ErrInsufficientFunds
 	}
 
 	w.balance -= amount
@@ -40,41 +42,55 @@ func (w Wallet) Withdraw(amount Bitcoin) error {
 
 func TestWallet(t *testing.T) {
 
-	assertBalance := func(t testing.TB, wallet Wallet, want Bitcoin) {
-		t.Helper()
-		got := wallet.Balance()
-
-		if got != want {
-			t.Errorf("got %s want %s", got, want)
-		}
-	}
-
 	t.Run("deposit", func(t *testing.T) {
 		wallet := Wallet{}
 		wallet.Desposit(Bitcoin(10))
+
 		assertBalance(t, wallet, Bitcoin(10))
 	})
 
-	//ajudante no tratamento de erros
-	assertError := func(t testing.TB, got error, want string) {
-		t.Helper()
+	t.Run("withdraw saldo suficiente", func(t *testing.T) {
+		wallet := Wallet{Bitcoin(20)}
+		err := wallet.Withdraw(Bitcoin(10))
 
-		if got == nil {
-			t.Fatal("Nenhum erro encontrado")
-		}
-
-		if got.Error() != want {
-			t.Errorf("got %q, want %q", got, want)
-		}
-	}
-
-	t.Run("withdraw saldo insuficiente", func(t *testing.T) {
-		startingBalance := Bitcoin(20)
-		wallet := Wallet{startingBalance}
-		err := wallet.Withdraw(Bitcoin(100))
-
-		assertError(t, err, "impossivel realizar withdraw, saldo insuficiente")
-		assertBalance(t, wallet, startingBalance)
+		assertNoError(t, err)
+		assertBalance(t, wallet, Bitcoin(20))
 	})
 
+	t.Run("withdraw saldo insuficiente", func(t *testing.T) {
+		wallet := Wallet{Bitcoin(20)}
+		err := wallet.Withdraw(Bitcoin(100))
+
+		assertError(t, err, ErrInsufficientFunds)
+		assertBalance(t, wallet, Bitcoin(20))
+	})
+
+}
+
+func assertBalance(t testing.TB, wallet Wallet, want Bitcoin) {
+	t.Helper()
+	got := wallet.Balance()
+
+	if got != want {
+		t.Errorf("got %s want %s", got, want)
+	}
+}
+
+func assertNoError(t testing.TB, got error) {
+	t.Helper()
+	if got != nil {
+		t.Fatal("Erro encontrado")
+	}
+}
+
+func assertError(t testing.TB, got, want error) {
+	t.Helper()
+
+	if got == nil {
+		t.Fatal("Nenhum erro encontrado")
+	}
+
+	if got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
 }
