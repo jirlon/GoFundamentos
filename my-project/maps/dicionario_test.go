@@ -1,18 +1,24 @@
-package maps
+package main
 
 import "testing"
 
-func Busca(dicionario map[string]string, palavra string) string {
-	return dicionario[palavra]
-}
-
 func TestBusca(t *testing.T) {
-	dicionario := map[string]string{"teste": "isso é apenas um teste"}
+	dicionario := Dicionario{"teste": "isso é apenas um teste"}
 
-	resultado := Busca(dicionario, "teste")
-	esperado := "isso é apenas um teste"
+	t.Run("palavra conhecida", func(t *testing.T) {
+		resultado, _ := dicionario.Busca("teste")
+		esperado := "isso é apenas um teste"
 
-	comparaStrings(t, resultado, esperado)
+		comparaStrings(t, resultado, esperado)
+	})
+
+	t.Run("palavra desconhecida", func(t *testing.T) {
+		_, err := dicionario.Busca("desconhecida")
+
+		if err == nil {
+			t.Fatal("é esperado que um erro seja obtido.")
+		}
+	})
 }
 
 func comparaStrings(t *testing.T, resultado, esperado string) {
