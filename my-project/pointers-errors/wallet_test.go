@@ -31,7 +31,7 @@ func (b Bitcoin) String() string {
 func (w Wallet) Withdraw(amount Bitcoin) error {
 
 	if amount > w.balance {
-		return errors.New("oh no")
+		return errors.New("impossivel realizar withdraw, saldo insuficiente")
 	}
 
 	w.balance -= amount
@@ -55,15 +55,26 @@ func TestWallet(t *testing.T) {
 		assertBalance(t, wallet, Bitcoin(10))
 	})
 
+	//ajudante no tratamento de erros
+	assertError := func(t testing.TB, got error, want string) {
+		t.Helper()
+
+		if got == nil {
+			t.Fatal("Nenhum erro encontrado")
+		}
+
+		if got.Error() != want {
+			t.Errorf("got %q, want %q", got, want)
+		}
+	}
+
 	t.Run("withdraw saldo insuficiente", func(t *testing.T) {
 		startingBalance := Bitcoin(20)
 		wallet := Wallet{startingBalance}
 		err := wallet.Withdraw(Bitcoin(100))
 
+		assertError(t, err, "impossivel realizar withdraw, saldo insuficiente")
 		assertBalance(t, wallet, startingBalance)
-
-		if err == nil {
-			t.Error("Nenhum erro encontrado")
-		}
 	})
+
 }
