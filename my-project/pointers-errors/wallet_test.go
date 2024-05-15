@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"testing"
 )
@@ -27,37 +28,42 @@ func (b Bitcoin) String() string {
 	return fmt.Sprintf("%d BTC", b)
 }
 
-func (w Wallet) Withdraw(amount Bitcoin) {
+func (w Wallet) Withdraw(amount Bitcoin) error {
+
+	if amount > w.balance {
+		return errors.New("oh no")
+	}
+
 	w.balance -= amount
+	return nil
 }
 
 func TestWallet(t *testing.T) {
 
-	t.Run("deposit", func(t *testing.T) {
-		wallet := Wallet{}
-
-		wallet.Desposit(Bitcoin(10))
-
+	assertBalance := func(t testing.TB, wallet Wallet, want Bitcoin) {
+		t.Helper()
 		got := wallet.Balance()
-
-		want := Bitcoin(10)
 
 		if got != want {
 			t.Errorf("got %s want %s", got, want)
 		}
+	}
+
+	t.Run("deposit", func(t *testing.T) {
+		wallet := Wallet{}
+		wallet.Desposit(Bitcoin(10))
+		assertBalance(t, wallet, Bitcoin(10))
 	})
 
-	t.Run("withdraw", func(t *testing.T) {
-		wallet := Wallet{balance: Bitcoin(20)}
+	t.Run("withdraw saldo insuficiente", func(t *testing.T) {
+		startingBalance := Bitcoin(20)
+		wallet := Wallet{startingBalance}
+		err := wallet.Withdraw(Bitcoin(100))
 
-		wallet.Withdraw(Bitcoin(10))
+		assertBalance(t, wallet, startingBalance)
 
-		got := wallet.Balance()
-
-		want := Bitcoin(20)
-
-		if got != want {
-			t.Errorf("got %s want %s", got, want)
+		if err == nil {
+			t.Error("Nenhum erro encontrado")
 		}
 	})
 }
