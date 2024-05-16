@@ -4,13 +4,20 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"time"
 )
 
+const ultimaPalavra = "Go!"
+const inicioContagem = 3
+
 func Contagem(saida io.Writer) {
-	for i := 3; i > 0; i-- {
+	for i := inicioContagem; i > 0; i-- {
+		time.Sleep(1 * time.Second)
 		fmt.Fprintln(saida, i)
 	}
-	fmt.Fprint(saida, "Go!")
+
+	time.Sleep(1 * time.Second)
+	fmt.Fprint(saida, ultimaPalavra)
 }
 
 func main() {
