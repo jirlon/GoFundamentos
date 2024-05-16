@@ -2,7 +2,6 @@ package main
 
 import (
 	"bytes"
-	"fmt"
 	"testing"
 )
 
@@ -12,13 +11,12 @@ func TestContagem(t *testing.T) {
 	Contagem(buffer)
 
 	resultado := buffer.String()
-	esperado := "3"
+	esperado := `3
+2
+1
+Go!`
 
 	if resultado != esperado {
 		t.Errorf("resultado '%s', esperando '%s'", resultado, esperado)
 	}
-}
-
-func Contagem(saida *bytes.Buffer) {
-	fmt.Fprint(saida, "3")
 }
