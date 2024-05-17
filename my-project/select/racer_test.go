@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -20,21 +19,23 @@ func TestRacer(t *testing.T) {
 		fastURL := fastServer.URL
 
 		want := fastURL
-		got, _ := Racer(slowURL, fastURL)
+		got, err := Racer(slowURL, fastURL)
+
+		if err != nil {
+			t.Fatalf("erro inesperado %v", err)
+		}
 
 		if got != want {
 			t.Errorf("got %q, want %q", got, want)
 		}
 	})
 
-	t.Run("retorna um erro se o servidor não responder em menos de 10s", func(t *testing.T) {
-		serverA := makeDelayedServer(11 * time.Second)
-		serverB := makeDelayedServer(12 * time.Second)
+	t.Run("retorna um erro se o servidor não responder em um tempo especificado", func(t *testing.T) {
+		server := makeDelayedServer(25 * time.Millisecond)
 
-		defer serverA.Close()
-		defer serverB.Close()
+		defer server.Close()
 
-		_, err := Racer(serverA.URL, serverB.URL)
+		_, err := ConfigurableRacer(server.URL, server.URL, 20*time.Millisecond)
 
 		if err == nil {
 			t.Error("Um erro é esperado")
@@ -47,26 +48,6 @@ func makeDelayedServer(delay time.Duration) *httptest.Server {
 		time.Sleep(delay)
 		w.WriteHeader(http.StatusOK)
 	}))
-}
-
-func Racer(a, b string) (winner string, error error) {
-	select {
-	case <-ping(a):
-		return a, nil
-	case <-ping(b):
-		return b, nil
-	case <-time.After(10 * time.Second):
-		return "", fmt.Errorf("tempo limite de espera excedido para %s e %s", a, b)
-	}
-}
-
-func ping(url string) chan struct{} {
-	ch := make(chan struct{})
-	go func() {
-		http.Get(url)
-		close(ch)
-	}()
-	return ch
 }
 
 func measureResponseTime(url string) time.Duration {
