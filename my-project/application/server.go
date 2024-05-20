@@ -8,14 +8,15 @@ import (
 
 type PlayerStore interface {
 	GetPlayerScore(name string) int
+	RecordWin(name string)
 }
 
 type PlayerServer struct {
 	store PlayerStore
 }
 
-func (p *PlayerServer) showScore(w http.ResponseWriter, r *http.Request) {
-	player := strings.TrimPrefix(r.URL.Path, "/players/")
+func (p *PlayerServer) showScore(w http.ResponseWriter, player string) {
+	//player := strings.TrimPrefix(r.URL.Path, "/players/")
 
 	score := p.store.GetPlayerScore(player)
 
@@ -26,26 +27,22 @@ func (p *PlayerServer) showScore(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, score)
 }
 
-func (p *PlayerServer) processWin(w http.ResponseWriter) {
+func (p *PlayerServer) processWin(w http.ResponseWriter, player string) {
+	//player := strings.TrimPrefix(r.URL.Path, "/players/")
+	p.store.RecordWin(player)
 	w.WriteHeader(http.StatusAccepted)
 }
 
 func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	player := strings.TrimPrefix(r.URL.Path, "/players/")
 
 	switch r.Method {
 	case http.MethodPost:
-		p.processWin(w)
+		p.processWin(w, player)
 	case http.MethodGet:
-		p.showScore(w, r)
+		p.showScore(w, player)
 	}
 }
-
-/*
-func PlayerServer(w http.ResponseWriter, r *http.Request) {
-	player := strings.TrimPrefix(r.URL.Path, "/players/")
-
-	fmt.Fprint(w, GetPlayerScore(player))
-}*/
 
 func GetPlayerScore(name string) string {
 	if name == "Maria" {
