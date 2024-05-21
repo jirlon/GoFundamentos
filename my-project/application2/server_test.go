@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
@@ -113,20 +114,37 @@ func TestLiga(t *testing.T) {
 
 		servidor.ServeHTTP(resposta, requisicao)
 
-		var obtido []Jogador
-
-		err := json.NewDecoder(resposta.Body).Decode(&obtido)
-
-		if err != nil {
-			t.Fatalf("nao foi possivel fazer parse da resposta do servidor '%s' no slice de Jogador, '%v'", resposta.Body, err)
-		}
-
+		obtido := obterLigaDaResposta(t, resposta.Body)
 		verificaStatus(t, resposta.Code, http.StatusOK)
+		verificaLiga(t, obtido, ligaEsperada)
 
-		if !reflect.DeepEqual(obtido, ligaEsperada) {
-			t.Errorf("obtido %v esperado %v", obtido, ligaEsperada)
+		if resposta.Result().Header.Get("content-type") != "application/json" {
+			t.Errorf("resposta não tinha o tipo de conteúdo de application/json, obtido %v", resposta.Result().Header)
 		}
 	})
+}
+
+func obterLigaDaResposta(t *testing.T, body io.Reader) (liga []Jogador) {
+	t.Helper()
+	err := json.NewDecoder(body).Decode(&liga)
+
+	if err != nil {
+		t.Fatalf("nao foi possivel fazer parse da resposta do servidor '%s' no slice de Jogador, '%v'", body, err)
+	}
+
+	return
+}
+
+func verificaLiga(t *testing.T, obtido, esperado []Jogador) {
+	t.Helper()
+	if !reflect.DeepEqual(obtido, esperado) {
+		t.Errorf("obtido %v esperado %v", obtido, esperado)
+	}
+}
+
+func novaRequisicaoDeLiga() *http.Request {
+	req, _ := http.NewRequest(http.MethodGet, "/liga", nil)
+	return req
 }
 
 func verificaStatus(t *testing.T, obtido, esperado int) {
