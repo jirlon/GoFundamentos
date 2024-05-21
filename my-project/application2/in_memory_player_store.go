@@ -8,6 +8,10 @@ type ArmazenamentoDeJogadorNaMemoria struct {
 	armazenamento map[string]int
 }
 
+func (a *ArmazenamentoDeJogadorNaMemoria) ObterLiga() []Jogador {
+	return nil
+}
+
 func (a *ArmazenamentoDeJogadorNaMemoria) GravarVitoria(nome string) {
 	a.armazenamento[nome]++
 }

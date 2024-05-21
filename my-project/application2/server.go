@@ -9,6 +9,7 @@ import (
 type ArmazenamentoJogador interface {
 	ObtemPontuacaoDoJogador(nome string) int
 	GravarVitoria(nome string)
+	ObterLiga() []Jogador
 }
 
 type ServidorJogador struct {
@@ -36,12 +37,8 @@ func NovoServidorJogador(armazenamento ArmazenamentoJogador) *ServidorJogador {
 }
 
 func (s *ServidorJogador) manipulaLiga(w http.ResponseWriter, r *http.Request) {
-	tabelaDaLiga := []Jogador{
-		{"Chris", 20},
-	}
 
-	json.NewEncoder(w).Encode(tabelaDaLiga)
-
+	json.NewEncoder(w).Encode(s.armazenamento.ObterLiga())
 	w.WriteHeader(http.StatusOK)
 }
 

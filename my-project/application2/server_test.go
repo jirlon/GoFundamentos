@@ -5,12 +5,18 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"reflect"
 	"testing"
 )
 
 type EsbocoArmazenamentoJogador struct {
 	pontuações        map[string]int
 	chamadasDeVitoria []string
+	liga              []Jogador
+}
+
+func (s *EsbocoArmazenamentoJogador) ObterLiga() []Jogador {
+	return s.liga
 }
 
 func (s *EsbocoArmazenamentoJogador) ObtemPontuacaoDoJogador(nome string) int {
@@ -28,6 +34,7 @@ func TestObterJogadores(t *testing.T) {
 			"Pepper": 20,
 			"Floyd":  10,
 		},
+		nil,
 		nil,
 	}
 	servidor := NovoServidorJogador(&armazenamento)
@@ -66,6 +73,7 @@ func TestArmazenarVitórias(t *testing.T) {
 	armazenamento := EsbocoArmazenamentoJogador{
 		map[string]int{},
 		nil,
+		nil,
 	}
 	servidor := NovoServidorJogador(&armazenamento)
 
@@ -90,10 +98,16 @@ func TestArmazenarVitórias(t *testing.T) {
 }
 
 func TestLiga(t *testing.T) {
-	armazenamento := EsbocoArmazenamentoJogador{}
-	servidor := NovoServidorJogador(&armazenamento)
+	t.Run("retorna a tabela da liga como json", func(t *testing.T) {
+		ligaEsperada := []Jogador{
+			{"Cleo", 32},
+			{"Chris", 20},
+			{"Tiest", 14},
+		}
 
-	t.Run("retorna 200 em /liga", func(t *testing.T) {
+		armazenamento := EsbocoArmazenamentoJogador{nil, nil, ligaEsperada}
+		servidor := NovoServidorJogador(&armazenamento)
+
 		requisicao, _ := http.NewRequest(http.MethodGet, "/liga", nil)
 		resposta := httptest.NewRecorder()
 
@@ -108,6 +122,10 @@ func TestLiga(t *testing.T) {
 		}
 
 		verificaStatus(t, resposta.Code, http.StatusOK)
+
+		if !reflect.DeepEqual(obtido, ligaEsperada) {
+			t.Errorf("obtido %v esperado %v", obtido, ligaEsperada)
+		}
 	})
 }
 
