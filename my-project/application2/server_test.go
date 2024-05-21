@@ -88,6 +88,20 @@ func TestArmazenarVitórias(t *testing.T) {
 	})
 }
 
+func TestLiga(t *testing.T) {
+	armazenamento := EsbocoArmazenamentoJogador{}
+	servidor := &ServidorJogador{&armazenamento}
+
+	t.Run("retorna 200 em /liga", func(t *testing.T) {
+		requisicao, _ := http.NewRequest(http.MethodGet, "/liga", nil)
+		resposta := httptest.NewRecorder()
+
+		servidor.ServeHTTP(resposta, requisicao)
+
+		verificaStatus(t, resposta.Code, http.StatusOK)
+	})
+}
+
 func verificaStatus(t *testing.T, obtido, esperado int) {
 	t.Helper()
 	if obtido != esperado {

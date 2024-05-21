@@ -15,14 +15,25 @@ type ServidorJogador struct {
 }
 
 func (s *ServidorJogador) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	jogador := r.URL.Path[len("/jogadores/"):]
 
-	switch r.Method {
-	case http.MethodPost:
-		s.processarVitoria(w, jogador)
-	case http.MethodGet:
-		s.mostrarPontuacao(w, jogador)
-	}
+	roteador := http.NewServeMux()
+
+	roteador.Handle("/liga", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	}))
+
+	roteador.Handle("/jogadores/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		jogador := r.URL.Path[len("/jogadores/"):]
+
+		switch r.Method {
+		case http.MethodPost:
+			s.processarVitoria(w, jogador)
+		case http.MethodGet:
+			s.mostrarPontuacao(w, jogador)
+		}
+	}))
+
+	roteador.ServeHTTP(w, r)
 }
 
 func (s *ServidorJogador) mostrarPontuacao(w http.ResponseWriter, jogador string) {
