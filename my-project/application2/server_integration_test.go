@@ -8,7 +8,7 @@ import (
 
 func TestGravaVitoriasEAsRetorna(t *testing.T) {
 	armazenamento := NovoArmazenamentoDeJogadorNaMemoria()
-	servidor := ServidorJogador{armazenamento}
+	servidor := NovoServidorJogador(armazenamento)
 	jogador := "Pepper"
 
 	servidor.ServeHTTP(httptest.NewRecorder(), novaRequisiçãoPostDeVitoria(jogador))

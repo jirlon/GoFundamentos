@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -29,7 +30,7 @@ func TestObterJogadores(t *testing.T) {
 		},
 		nil,
 	}
-	servidor := &ServidorJogador{&armazenamento}
+	servidor := NovoServidorJogador(&armazenamento)
 
 	t.Run("retorna pontuação de Pepper", func(t *testing.T) {
 		requisicao := novaRequisicaoObterPontuacao("Pepper")
@@ -66,7 +67,7 @@ func TestArmazenarVitórias(t *testing.T) {
 		map[string]int{},
 		nil,
 	}
-	servidor := &ServidorJogador{&armazenamento}
+	servidor := NovoServidorJogador(&armazenamento)
 
 	t.Run("grava vitória no POST", func(t *testing.T) {
 		jogador := "Pepper"
@@ -90,13 +91,21 @@ func TestArmazenarVitórias(t *testing.T) {
 
 func TestLiga(t *testing.T) {
 	armazenamento := EsbocoArmazenamentoJogador{}
-	servidor := &ServidorJogador{&armazenamento}
+	servidor := NovoServidorJogador(&armazenamento)
 
 	t.Run("retorna 200 em /liga", func(t *testing.T) {
 		requisicao, _ := http.NewRequest(http.MethodGet, "/liga", nil)
 		resposta := httptest.NewRecorder()
 
 		servidor.ServeHTTP(resposta, requisicao)
+
+		var obtido []Jogador
+
+		err := json.NewDecoder(resposta.Body).Decode(&obtido)
+
+		if err != nil {
+			t.Fatalf("nao foi possivel fazer parse da resposta do servidor '%s' no slice de Jogador, '%v'", resposta.Body, err)
+		}
 
 		verificaStatus(t, resposta.Code, http.StatusOK)
 	})
