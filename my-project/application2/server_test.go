@@ -10,6 +10,8 @@ import (
 	"testing"
 )
 
+const tipoDoConteudoJSON = "application/json"
+
 type EsbocoArmazenamentoJogador struct {
 	pontuações        map[string]int
 	chamadasDeVitoria []string
@@ -118,10 +120,15 @@ func TestLiga(t *testing.T) {
 		verificaStatus(t, resposta.Code, http.StatusOK)
 		verificaLiga(t, obtido, ligaEsperada)
 
-		if resposta.Result().Header.Get("content-type") != "application/json" {
-			t.Errorf("resposta não tinha o tipo de conteúdo de application/json, obtido %v", resposta.Result().Header)
-		}
+		verificaTipoDoConteudo(t, resposta, tipoDoConteudoJSON)
 	})
+}
+
+func verificaTipoDoConteudo(t *testing.T, resposta *httptest.ResponseRecorder, esperado string) {
+	t.Helper()
+	if resposta.Result().Header.Get("content-type") != "application/json" {
+		t.Errorf("resposta não tinha o tipo de conteúdo de application/json, obtido %v", resposta.Result().Header)
+	}
 }
 
 func obterLigaDaResposta(t *testing.T, body io.Reader) (liga []Jogador) {
