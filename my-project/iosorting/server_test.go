@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"reflect"
-	"strings"
 	"testing"
 )
 
@@ -121,31 +120,6 @@ func TestLiga(t *testing.T) {
 		verificaLiga(t, obtido, ligaEsperada)
 
 		verificaTipoDoConteudo(t, resposta, tipoDoConteudoJSON)
-	})
-}
-
-func TestSistemaDeArquivoDeArmazenamentoDoJogador(t *testing.T) {
-
-	t.Run("/liga de um leitor", func(t *testing.T) {
-		bancoDeDados := strings.NewReader(`[
-			{"Nome": "Cleo", "Vitorias": 10},
-			{"Nome": "Chris", "Vitorias": 33}
-		]`)
-
-		armazenamento := SistemaDeArquivoDeArmazenamentoDoJogador{bancoDeDados}
-
-		recebido := armazenamento.PegaLiga()
-
-		esperado := []Jogador{
-			{"Cleo", 10},
-			{"Chris", 33},
-		}
-
-		defineLiga(t, recebido, esperado)
-
-		//read again
-		recebido = armazenamento.PegaLiga()
-		defineLiga(t, recebido, esperado)
 	})
 }
 
