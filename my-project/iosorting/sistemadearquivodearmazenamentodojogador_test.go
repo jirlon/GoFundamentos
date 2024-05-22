@@ -1,16 +1,15 @@
 package main
 
 import (
-	"encoding/json"
 	"io"
 )
 
 type SistemaDeArquivoDeArmazenamentoDoJogador struct {
-	bancoDeDados io.Reader
+	bancoDeDados io.ReadSeeker
 }
 
 func (f *SistemaDeArquivoDeArmazenamentoDoJogador) PegaLiga() []Jogador {
-	var liga []Jogador
-	json.NewDecoder(f.bancoDeDados).Decode(&liga)
+	f.bancoDeDados.Seek(0, 0)
+	liga, _ := NovaLiga(f.bancoDeDados)
 	return liga
 }

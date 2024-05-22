@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -143,6 +142,10 @@ func TestSistemaDeArquivoDeArmazenamentoDoJogador(t *testing.T) {
 		}
 
 		defineLiga(t, recebido, esperado)
+
+		//read again
+		recebido = armazenamento.PegaLiga()
+		defineLiga(t, recebido, esperado)
 	})
 }
 
@@ -155,13 +158,13 @@ func verificaTipoDoConteudo(t *testing.T, resposta *httptest.ResponseRecorder, e
 
 func obterLigaDaResposta(t *testing.T, body io.Reader) (liga []Jogador) {
 	t.Helper()
-	err := json.NewDecoder(body).Decode(&liga)
+	liga, err := NovaLiga(body)
 
 	if err != nil {
 		t.Fatalf("nao foi possivel fazer parse da resposta do servidor '%s' no slice de Jogador, '%v'", body, err)
 	}
 
-	return
+	return liga
 }
 
 func verificaLiga(t *testing.T, obtido, esperado []Jogador) {
