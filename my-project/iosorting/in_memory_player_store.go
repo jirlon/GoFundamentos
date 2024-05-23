@@ -1,8 +1,9 @@
 package main
 
+/*
 func NovoArmazenamentoDeJogadorNaMemoria() *ArmazenamentoDeJogadorNaMemoria {
 	return &ArmazenamentoDeJogadorNaMemoria{map[string]int{}}
-}
+}*/
 
 type ArmazenamentoDeJogadorNaMemoria struct {
 	armazenamento map[string]int
