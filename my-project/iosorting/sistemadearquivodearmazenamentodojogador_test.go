@@ -12,17 +12,14 @@ type SistemaDeArquivoDeArmazenamentoDoJogador struct {
 	bancoDeDados io.ReadWriteSeeker
 }
 
-func (f *SistemaDeArquivoDeArmazenamentoDoJogador) ObterPontuacaoDoJogador(nome string) int {
-	var vitorias int
+func (f *SistemaDeArquivoDeArmazenamentoDoJogador) ObtemPontuacaoDoJogador(nome string) int {
 
-	for _, jogador := range f.PegaLiga() {
-		if jogador.Nome == nome {
-			vitorias = jogador.Vitorias
-			break
-		}
+	jogador := f.ObterLiga().Find(nome)
+
+	if jogador != nil {
+		return jogador.Vitorias
 	}
-
-	return vitorias
+	return 0
 }
 
 func TestSistemaDeArquivoDeArmazenamentoDoJogador(t *testing.T) {
@@ -36,7 +33,7 @@ func TestSistemaDeArquivoDeArmazenamentoDoJogador(t *testing.T) {
 
 		armazenamento := SistemaDeArquivoDeArmazenamentoDoJogador{bancoDeDados}
 
-		recebido := armazenamento.PegaLiga()
+		recebido := armazenamento.ObterLiga()
 
 		esperado := []Jogador{
 			{"Cleo", 10},
@@ -46,7 +43,7 @@ func TestSistemaDeArquivoDeArmazenamentoDoJogador(t *testing.T) {
 		defineLiga(t, recebido, esperado)
 
 		//read again
-		recebido = armazenamento.PegaLiga()
+		recebido = armazenamento.ObterLiga()
 		defineLiga(t, recebido, esperado)
 	})
 
@@ -59,7 +56,7 @@ func TestSistemaDeArquivoDeArmazenamentoDoJogador(t *testing.T) {
 
 		armazenamento := SistemaDeArquivoDeArmazenamentoDoJogador{bancoDeDados}
 
-		recebido := armazenamento.ObterPontuacaoDoJogador("Chris")
+		recebido := armazenamento.ObtemPontuacaoDoJogador("Chris")
 
 		esperado := 33
 
@@ -77,19 +74,36 @@ func TestSistemaDeArquivoDeArmazenamentoDoJogador(t *testing.T) {
 
 		armazenamento.SalvaVitoria("Chris")
 
-		recebido := armazenamento.ObterPontuacaoDoJogador("Chris")
+		recebido := armazenamento.ObtemPontuacaoDoJogador("Chris")
 		esperado := 34
+		definePontuacaoIgual(t, recebido, esperado)
+	})
+
+	t.Run("armazena vitorias de novos jogadores", func(t *testing.T) {
+		bancoDeDados, limpaBancoDeDados := criaArquivoTemporario(t, `[
+			{"Nome": "Cleo", "Vitorias": 10},
+			{"Nome": "Chris", "Vitorias": 33}
+		]`)
+		defer limpaBancoDeDados()
+
+		armazenamento := SistemaDeArquivoDeArmazenamentoDoJogador{bancoDeDados}
+
+		armazenamento.SalvaVitoria("Pepper")
+
+		recebido := armazenamento.ObtemPontuacaoDoJogador("Pepper")
+		esperado := 1
 		definePontuacaoIgual(t, recebido, esperado)
 	})
 }
 
 func (f *SistemaDeArquivoDeArmazenamentoDoJogador) SalvaVitoria(nome string) {
-	liga := f.PegaLiga()
+	liga := f.ObterLiga()
+	jogador := liga.Find(nome)
 
-	for i, jogador := range liga {
-		if jogador.Nome == nome {
-			liga[i].Vitorias++
-		}
+	if jogador != nil {
+		jogador.Vitorias++
+	} else {
+		liga = append(liga, Jogador{nome, 1})
 	}
 
 	f.bancoDeDados.Seek(0, 0)
@@ -122,7 +136,7 @@ func criaArquivoTemporario(t *testing.T, dadoInicial string) (io.ReadWriteSeeker
 	return arquivotmp, removeArquivo
 }
 
-func (f *SistemaDeArquivoDeArmazenamentoDoJogador) PegaLiga() []Jogador {
+func (f *SistemaDeArquivoDeArmazenamentoDoJogador) ObterLiga() Liga {
 	f.bancoDeDados.Seek(0, 0)
 	liga, _ := NovaLiga(f.bancoDeDados)
 	return liga

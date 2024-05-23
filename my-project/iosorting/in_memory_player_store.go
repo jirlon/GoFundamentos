@@ -8,7 +8,7 @@ type ArmazenamentoDeJogadorNaMemoria struct {
 	armazenamento map[string]int
 }
 
-func (a *ArmazenamentoDeJogadorNaMemoria) ObterLiga() []Jogador {
+func (a *ArmazenamentoDeJogadorNaMemoria) ObterLiga() Liga {
 	var liga []Jogador
 	for nome, vitorias := range a.armazenamento {
 		liga = append(liga, Jogador{nome, vitorias})
@@ -17,7 +17,7 @@ func (a *ArmazenamentoDeJogadorNaMemoria) ObterLiga() []Jogador {
 	return liga
 }
 
-func (a *ArmazenamentoDeJogadorNaMemoria) GravarVitoria(nome string) {
+func (a *ArmazenamentoDeJogadorNaMemoria) SalvaVitoria(nome string) {
 	a.armazenamento[nome]++
 }
 

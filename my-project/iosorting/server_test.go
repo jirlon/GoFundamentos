@@ -17,7 +17,7 @@ type EsbocoArmazenamentoJogador struct {
 	liga              []Jogador
 }
 
-func (s *EsbocoArmazenamentoJogador) ObterLiga() []Jogador {
+func (s *EsbocoArmazenamentoJogador) ObterLiga() Liga {
 	return s.liga
 }
 
@@ -26,7 +26,7 @@ func (s *EsbocoArmazenamentoJogador) ObtemPontuacaoDoJogador(nome string) int {
 	return pontuação
 }
 
-func (s *EsbocoArmazenamentoJogador) GravarVitoria(nome string) {
+func (s *EsbocoArmazenamentoJogador) SalvaVitoria(nome string) {
 	s.chamadasDeVitoria = append(s.chamadasDeVitoria, nome)
 }
 

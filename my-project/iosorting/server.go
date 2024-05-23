@@ -8,8 +8,8 @@ import (
 
 type ArmazenamentoJogador interface {
 	ObtemPontuacaoDoJogador(nome string) int
-	GravarVitoria(nome string)
-	ObterLiga() []Jogador
+	SalvaVitoria(nome string)
+	ObterLiga() Liga
 }
 
 type ServidorJogador struct {
@@ -63,6 +63,6 @@ func (s *ServidorJogador) mostrarPontuacao(w http.ResponseWriter, jogador string
 }
 
 func (s *ServidorJogador) processarVitoria(w http.ResponseWriter, jogador string) {
-	s.armazenamento.GravarVitoria(jogador)
+	s.armazenamento.SalvaVitoria(jogador)
 	w.WriteHeader(http.StatusAccepted)
 }
