@@ -8,7 +8,7 @@ import (
 
 func TestSistemaDeArquivoDeArmazenamentoDoJogador(t *testing.T) {
 
-	t.Run("/liga de um leitor", func(t *testing.T) {
+	t.Run("/liga ordenada", func(t *testing.T) {
 		bancoDeDados, limpaBancoDeDados := criaArquivoTemporario(t, `[
 			{"Nome": "Cleo", "Vitorias": 10},
 			{"Nome": "Chris", "Vitorias": 33}
@@ -22,8 +22,8 @@ func TestSistemaDeArquivoDeArmazenamentoDoJogador(t *testing.T) {
 		recebido := armazenamento.ObterLiga()
 
 		esperado := []Jogador{
-			{"Cleo", 10},
 			{"Chris", 33},
+			{"Cleo", 10},
 		}
 
 		defineLiga(t, recebido, esperado)

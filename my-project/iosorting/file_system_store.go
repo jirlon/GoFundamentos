@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"sort"
 )
 
 type SistemaDeArquivoDeArmazenamentoDoJogador struct {
@@ -59,6 +60,9 @@ func (f *SistemaDeArquivoDeArmazenamentoDoJogador) ObtemPontuacaoDoJogador(nome 
 }
 
 func (f *SistemaDeArquivoDeArmazenamentoDoJogador) ObterLiga() Liga {
+	sort.Slice(f.liga, func(i, j int) bool {
+		return f.liga[i].Vitorias > f.liga[j].Vitorias
+	})
 	return f.liga
 }
 
