@@ -9,7 +9,7 @@ import (
 func TestGravaVitoriasEAsRetorna(t *testing.T) {
 	bancoDeDados, limpaBancoDeDados := criaArquivoTemporario(t, "")
 	defer limpaBancoDeDados()
-	armazenamento := &SistemaDeArquivoDeArmazenamentoDoJogador{bancoDeDados}
+	armazenamento := NovoSistemaDeArquivoDeArmazenamentoDoJogador(bancoDeDados)
 	servidor := NovoServidorJogador(armazenamento)
 	jogador := "Pepper"
 

@@ -2,16 +2,26 @@ package main
 
 import (
 	"encoding/json"
-	"io"
+	"os"
 )
 
 type SistemaDeArquivoDeArmazenamentoDoJogador struct {
-	bancoDeDados io.ReadWriteSeeker
+	bancoDeDados *json.Encoder
+	liga         Liga
+}
+
+func NovoSistemaDeArquivoDeArmazenamentoDoJogador(bancoDeDados *os.File) *SistemaDeArquivoDeArmazenamentoDoJogador {
+	bancoDeDados.Seek(0, 0)
+	liga, _ := NovaLiga(bancoDeDados)
+	return &SistemaDeArquivoDeArmazenamentoDoJogador{
+		bancoDeDados: json.NewEncoder(&fita{bancoDeDados}),
+		liga:         liga,
+	}
 }
 
 func (f *SistemaDeArquivoDeArmazenamentoDoJogador) ObtemPontuacaoDoJogador(nome string) int {
 
-	jogador := f.ObterLiga().Find(nome)
+	jogador := f.liga.Find(nome)
 
 	if jogador != nil {
 		return jogador.Vitorias
@@ -20,21 +30,19 @@ func (f *SistemaDeArquivoDeArmazenamentoDoJogador) ObtemPontuacaoDoJogador(nome 
 }
 
 func (f *SistemaDeArquivoDeArmazenamentoDoJogador) ObterLiga() Liga {
-	f.bancoDeDados.Seek(0, 0)
-	liga, _ := NovaLiga(f.bancoDeDados)
-	return liga
+	return f.liga
 }
 
 func (f *SistemaDeArquivoDeArmazenamentoDoJogador) SalvaVitoria(nome string) {
-	liga := f.ObterLiga()
-	jogador := liga.Find(nome)
+	jogador := f.liga.Find(nome)
 
 	if jogador != nil {
 		jogador.Vitorias++
 	} else {
-		liga = append(liga, Jogador{nome, 1})
+		f.liga = append(f.liga, Jogador{nome, 1})
 	}
 
-	f.bancoDeDados.Seek(0, 0)
-	json.NewEncoder(f.bancoDeDados).Encode(liga)
+	//f.bancoDeDados.Seek(0, 0)
+	//json.NewEncoder(f.bancoDeDados).Encode(f.liga)
+	f.bancoDeDados.Encode(f.liga)
 }

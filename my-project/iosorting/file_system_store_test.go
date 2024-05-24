@@ -1,7 +1,6 @@
 package main
 
 import (
-	"io"
 	"io/ioutil"
 	"os"
 	"testing"
@@ -16,7 +15,7 @@ func TestSistemaDeArquivoDeArmazenamentoDoJogador(t *testing.T) {
 		]`)
 		defer limpaBancoDeDados()
 
-		armazenamento := SistemaDeArquivoDeArmazenamentoDoJogador{bancoDeDados}
+		armazenamento := NovoSistemaDeArquivoDeArmazenamentoDoJogador(bancoDeDados)
 
 		recebido := armazenamento.ObterLiga()
 
@@ -39,7 +38,7 @@ func TestSistemaDeArquivoDeArmazenamentoDoJogador(t *testing.T) {
 		]`)
 		defer limpaBancoDeDados()
 
-		armazenamento := SistemaDeArquivoDeArmazenamentoDoJogador{bancoDeDados}
+		armazenamento := NovoSistemaDeArquivoDeArmazenamentoDoJogador(bancoDeDados)
 
 		recebido := armazenamento.ObtemPontuacaoDoJogador("Chris")
 
@@ -55,7 +54,7 @@ func TestSistemaDeArquivoDeArmazenamentoDoJogador(t *testing.T) {
 		]`)
 		defer limpaBancoDeDados()
 
-		armazenamento := SistemaDeArquivoDeArmazenamentoDoJogador{bancoDeDados}
+		armazenamento := NovoSistemaDeArquivoDeArmazenamentoDoJogador(bancoDeDados)
 
 		armazenamento.SalvaVitoria("Chris")
 
@@ -71,7 +70,7 @@ func TestSistemaDeArquivoDeArmazenamentoDoJogador(t *testing.T) {
 		]`)
 		defer limpaBancoDeDados()
 
-		armazenamento := SistemaDeArquivoDeArmazenamentoDoJogador{bancoDeDados}
+		armazenamento := NovoSistemaDeArquivoDeArmazenamentoDoJogador(bancoDeDados)
 
 		armazenamento.SalvaVitoria("Pepper")
 
@@ -88,7 +87,7 @@ func definePontuacaoIgual(t *testing.T, recebido, esperado int) {
 	}
 }
 
-func criaArquivoTemporario(t *testing.T, dadoInicial string) (io.ReadWriteSeeker, func()) {
+func criaArquivoTemporario(t *testing.T, dadoInicial string) (*os.File, func()) {
 	t.Helper()
 
 	arquivotmp, err := ioutil.TempFile("", "db")
