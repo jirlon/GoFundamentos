@@ -13,17 +13,11 @@ type SistemaDeArquivoDeArmazenamentoDoJogador struct {
 
 // construtor
 func NovoSistemaDeArquivoDeArmazenamentoDoJogador(arquivo *os.File) (*SistemaDeArquivoDeArmazenamentoDoJogador, error) {
-	arquivo.Seek(0, 0)
 
-	info, err := arquivo.Stat()
+	err := iniciaArquivoBDDeJogador(arquivo)
 
 	if err != nil {
-		return nil, fmt.Errorf("problema ao usar o arquivo %s, %v", arquivo.Name(), err)
-	}
-
-	if info.Size() == 0 {
-		arquivo.Write([]byte("[]"))
-		arquivo.Seek(0, 0)
+		return nil, fmt.Errorf("problema inicializando arquivo do jogador, %v", err)
 	}
 
 	liga, err := NovaLiga(arquivo)
@@ -35,6 +29,23 @@ func NovoSistemaDeArquivoDeArmazenamentoDoJogador(arquivo *os.File) (*SistemaDeA
 		bancoDeDados: json.NewEncoder(&fita{arquivo}),
 		liga:         liga,
 	}, nil
+}
+
+func iniciaArquivoBDDeJogador(arquivo *os.File) error {
+	arquivo.Seek(0, 0)
+
+	info, err := arquivo.Stat()
+
+	if err != nil {
+		return fmt.Errorf("problema ao usar o arquivo %s, %v", arquivo.Name(), err)
+	}
+
+	if info.Size() == 0 {
+		arquivo.Write([]byte("[]"))
+		arquivo.Seek(0, 0)
+	}
+
+	return nil
 }
 
 func (f *SistemaDeArquivoDeArmazenamentoDoJogador) ObtemPontuacaoDoJogador(nome string) int {
