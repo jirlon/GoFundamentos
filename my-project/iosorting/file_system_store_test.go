@@ -15,7 +15,9 @@ func TestSistemaDeArquivoDeArmazenamentoDoJogador(t *testing.T) {
 		]`)
 		defer limpaBancoDeDados()
 
-		armazenamento := NovoSistemaDeArquivoDeArmazenamentoDoJogador(bancoDeDados)
+		armazenamento, err := NovoSistemaDeArquivoDeArmazenamentoDoJogador(bancoDeDados)
+
+		defineSemErro(t, err)
 
 		recebido := armazenamento.ObterLiga()
 
@@ -38,7 +40,9 @@ func TestSistemaDeArquivoDeArmazenamentoDoJogador(t *testing.T) {
 		]`)
 		defer limpaBancoDeDados()
 
-		armazenamento := NovoSistemaDeArquivoDeArmazenamentoDoJogador(bancoDeDados)
+		armazenamento, err := NovoSistemaDeArquivoDeArmazenamentoDoJogador(bancoDeDados)
+
+		defineSemErro(t, err)
 
 		recebido := armazenamento.ObtemPontuacaoDoJogador("Chris")
 
@@ -54,7 +58,9 @@ func TestSistemaDeArquivoDeArmazenamentoDoJogador(t *testing.T) {
 		]`)
 		defer limpaBancoDeDados()
 
-		armazenamento := NovoSistemaDeArquivoDeArmazenamentoDoJogador(bancoDeDados)
+		armazenamento, err := NovoSistemaDeArquivoDeArmazenamentoDoJogador(bancoDeDados)
+
+		defineSemErro(t, err)
 
 		armazenamento.SalvaVitoria("Chris")
 
@@ -70,13 +76,24 @@ func TestSistemaDeArquivoDeArmazenamentoDoJogador(t *testing.T) {
 		]`)
 		defer limpaBancoDeDados()
 
-		armazenamento := NovoSistemaDeArquivoDeArmazenamentoDoJogador(bancoDeDados)
+		armazenamento, err := NovoSistemaDeArquivoDeArmazenamentoDoJogador(bancoDeDados)
+
+		defineSemErro(t, err)
 
 		armazenamento.SalvaVitoria("Pepper")
 
 		recebido := armazenamento.ObtemPontuacaoDoJogador("Pepper")
 		esperado := 1
 		definePontuacaoIgual(t, recebido, esperado)
+	})
+
+	t.Run("funciona com um arquivo vazio", func(t *testing.T) {
+		bancoDeDados, limpaBancoDeDados := criaArquivoTemporario(t, "")
+		defer limpaBancoDeDados()
+
+		_, err := NovoSistemaDeArquivoDeArmazenamentoDoJogador(bancoDeDados)
+
+		defineSemErro(t, err)
 	})
 }
 
@@ -104,4 +121,11 @@ func criaArquivoTemporario(t *testing.T, dadoInicial string) (*os.File, func()) 
 	}
 
 	return arquivotmp, removeArquivo
+}
+
+func defineSemErro(t *testing.T, err error) {
+	t.Helper()
+	if err != nil {
+		t.Fatalf("não esperava um erro, mas obteve um, %v", err)
+	}
 }
