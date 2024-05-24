@@ -148,26 +148,11 @@ func verificaLiga(t *testing.T, obtido, esperado []Jogador) {
 	}
 }
 
-func novaRequisicaoDeLiga() *http.Request {
-	req, _ := http.NewRequest(http.MethodGet, "/liga", nil)
-	return req
-}
-
 func verificaStatus(t *testing.T, obtido, esperado int) {
 	t.Helper()
 	if obtido != esperado {
 		t.Errorf("não obteve o status correto, obteve %d, esperava %d", obtido, esperado)
 	}
-}
-
-func novaRequisicaoObterPontuacao(nome string) *http.Request {
-	req, _ := http.NewRequest(http.MethodGet, fmt.Sprintf("/jogadores/%s", nome), nil)
-	return req
-}
-
-func novaRequisiçãoPostDeVitoria(nome string) *http.Request {
-	req, _ := http.NewRequest(http.MethodPost, fmt.Sprintf("/jogadores/%s", nome), nil)
-	return req
 }
 
 func verificaCorpoDaResposta(t *testing.T, obtido, esperado string) {
@@ -182,4 +167,19 @@ func defineLiga(t *testing.T, recebido, esperado []Jogador) {
 	if !reflect.DeepEqual(recebido, esperado) {
 		t.Errorf("recebido %v esperado %v", recebido, esperado)
 	}
+}
+
+func novaRequisicaoDeLiga() *http.Request {
+	req, _ := http.NewRequest(http.MethodGet, "/liga", nil)
+	return req
+}
+
+func novaRequisicaoObterPontuacao(nome string) *http.Request {
+	req, _ := http.NewRequest(http.MethodGet, fmt.Sprintf("/jogadores/%s", nome), nil)
+	return req
+}
+
+func novaRequisiçãoPostDeVitoria(nome string) *http.Request {
+	req, _ := http.NewRequest(http.MethodPost, fmt.Sprintf("/jogadores/%s", nome), nil)
+	return req
 }

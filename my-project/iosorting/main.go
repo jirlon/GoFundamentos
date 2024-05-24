@@ -9,6 +9,7 @@ import (
 const dbFileName = "game.db.json"
 
 func main() {
+	//esboço := &EsbocoArmazenamentoJogador{}
 	db, err := os.OpenFile(dbFileName, os.O_RDWR|os.O_CREATE, 0666)
 
 	if err != nil {
