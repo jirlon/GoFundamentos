@@ -1,6 +1,10 @@
 package poker
 
-import "io"
+import (
+	"bufio"
+	"io"
+	"strings"
+)
 
 type CLI struct {
 	armazenamentoJogador ArmazenamentoJogador
@@ -8,5 +12,11 @@ type CLI struct {
 }
 
 func (cli *CLI) JogarPoker() {
-	cli.armazenamentoJogador.SalvaVitoria("Chris")
+	reader := bufio.NewScanner(cli.in)
+	reader.Scan()
+	cli.armazenamentoJogador.SalvaVitoria(extrairVencedor(reader.Text()))
+}
+
+func extrairVencedor(userInput string) string {
+	return strings.Replace(userInput, " venceu", "", 1)
 }

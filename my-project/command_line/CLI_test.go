@@ -6,20 +6,24 @@ import (
 )
 
 func TestCLI(t *testing.T) {
-	in := strings.NewReader("Chris venceu\n")
-	ArmazenamentoJogador := &EsbocoArmazenamentoJogador{}
 
-	cli := &CLI{ArmazenamentoJogador, in}
-	cli.JogarPoker()
+	t.Run("recorda vencedor chris digitado pelo usuario", func(t *testing.T) {
+		in := strings.NewReader("Chris venceu\n")
+		armazenamentoJogador := &EsbocoArmazenamentoJogador{}
 
-	if len(ArmazenamentoJogador.chamadasDeVitoria) < 1 {
-		t.Fatal("esperando uma chamada de vitoria mas nao recebi nenhuma")
-	}
+		cli := &CLI{armazenamentoJogador, in}
+		cli.JogarPoker()
 
-	obtido := ArmazenamentoJogador.chamadasDeVitoria[0]
-	esperado := "Chris"
+		verificaVitoriaJogador(t, armazenamentoJogador, "Chris")
+	})
 
-	if obtido != esperado {
-		t.Errorf("nao armazenou o vencedor correto, recebi '%s', esperava '%s'", obtido, esperado)
-	}
+	t.Run("recorda vencedor cleo digitado pelo usuario", func(t *testing.T) {
+		in := strings.NewReader("Cleo venceu\n")
+		armazenamentoJogador := &EsbocoArmazenamentoJogador{}
+
+		cli := &CLI{armazenamentoJogador, in}
+		cli.JogarPoker()
+
+		verificaVitoriaJogador(t, armazenamentoJogador, "Cleo")
+	})
 }
