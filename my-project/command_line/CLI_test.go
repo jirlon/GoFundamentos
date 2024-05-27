@@ -1,29 +1,31 @@
-package poker
+package poker_test
 
 import (
 	"strings"
 	"testing"
+
+	poker "github.com/jirlon/GoFundamentos/command_line"
 )
 
 func TestCLI(t *testing.T) {
 
 	t.Run("recorda vencedor chris digitado pelo usuario", func(t *testing.T) {
 		in := strings.NewReader("Chris venceu\n")
-		armazenamentoJogador := &EsbocoArmazenamentoJogador{}
+		armazenamentoJogador := &poker.EsbocoArmazenamentoJogador{}
 
-		cli := &CLI{armazenamentoJogador, in}
+		cli := poker.NovoCLI(armazenamentoJogador, in)
 		cli.JogarPoker()
 
-		verificaVitoriaJogador(t, armazenamentoJogador, "Chris")
+		poker.VerificaVitoriaJogador(t, armazenamentoJogador, "Chris")
 	})
 
 	t.Run("recorda vencedor cleo digitado pelo usuario", func(t *testing.T) {
 		in := strings.NewReader("Cleo venceu\n")
-		armazenamentoJogador := &EsbocoArmazenamentoJogador{}
+		armazenamentoJogador := &poker.EsbocoArmazenamentoJogador{}
 
-		cli := &CLI{armazenamentoJogador, in}
+		cli := poker.NovoCLI(armazenamentoJogador, in)
 		cli.JogarPoker()
 
-		verificaVitoriaJogador(t, armazenamentoJogador, "Cleo")
+		poker.VerificaVitoriaJogador(t, armazenamentoJogador, "Cleo")
 	})
 }

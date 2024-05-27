@@ -11,25 +11,6 @@ import (
 
 const tipoDoConteudoJSON = "application/json"
 
-type EsbocoArmazenamentoJogador struct {
-	pontuações        map[string]int
-	chamadasDeVitoria []string
-	liga              []Jogador
-}
-
-func (s *EsbocoArmazenamentoJogador) ObterLiga() Liga {
-	return s.liga
-}
-
-func (s *EsbocoArmazenamentoJogador) ObtemPontuacaoDoJogador(nome string) int {
-	pontuação := s.pontuações[nome]
-	return pontuação
-}
-
-func (s *EsbocoArmazenamentoJogador) SalvaVitoria(nome string) {
-	s.chamadasDeVitoria = append(s.chamadasDeVitoria, nome)
-}
-
 func TestObterJogadores(t *testing.T) {
 	armazenamento := EsbocoArmazenamentoJogador{
 		map[string]int{
@@ -88,7 +69,7 @@ func TestArmazenarVitórias(t *testing.T) {
 		servidor.ServeHTTP(resposta, requisicao)
 
 		verificaStatus(t, resposta.Code, http.StatusAccepted)
-		verificaVitoriaJogador(t, &armazenamento, jogador)
+		VerificaVitoriaJogador(t, &armazenamento, jogador)
 	})
 }
 
@@ -175,16 +156,4 @@ func novaRequisicaoObterPontuacao(nome string) *http.Request {
 func novaRequisiçãoPostDeVitoria(nome string) *http.Request {
 	req, _ := http.NewRequest(http.MethodPost, fmt.Sprintf("/jogadores/%s", nome), nil)
 	return req
-}
-
-func verificaVitoriaJogador(t *testing.T, armazenamento *EsbocoArmazenamentoJogador, vencedor string) {
-	t.Helper()
-
-	if len(armazenamento.chamadasDeVitoria) != 1 {
-		t.Fatalf("recebi %d chamadas de SalvaVitoria esperava %d", len(armazenamento.chamadasDeVitoria), 1)
-	}
-
-	if armazenamento.chamadasDeVitoria[0] != vencedor {
-		t.Errorf("nao armazenou o vencedor correto, recebi '%s' esperava '%s'", armazenamento.chamadasDeVitoria[0], vencedor)
-	}
 }
